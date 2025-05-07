@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Главная{% endblock %}
+{% block content %}
+<h1>Добро пожаловать в сервис рассылок</h1>
+
+<div class="row mt-4">
+  <div class="col-md-4">
+    <div class="card text-bg-light mb-3">
+      <div class="card-header">Всего рассылок</div>
+      <div class="card-body">
+        <h5 class="card-title">{{ mailing_count }}</h5>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-bg-light mb-3">
+      <div class="card-header">Активных рассылок</div>
+      <div class="card-body">
+        <h5 class="card-title">{{ active_count }}</h5>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-bg-light mb-3">
+      <div class="card-header">Уникальных клиентов</div>
+      <div class="card-body">
+        <h5 class="card-title">{{ unique_clients_count }}</h5>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
