@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Попытки рассылок{% endblock %}
+{% block content %}
+<h2>Попытки рассылок</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Дата и время</th>
+      <th>Статус</th>
+      <th>Ответ сервера</th>
+      <th>Рассылка</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for attempt in object_list %}
+    <tr>
+      <td>{{ attempt.timestamp|date:"d.m.Y H:i:s" }}</td>
+      <td>
+        {% if attempt.status == "success" %}
+          Успешно!
+        {% else %}
+          Ошибка!
+        {% endif %}
+      </td>
+      <td>{{ attempt.server_response }}</td>
+      <td>#{{ attempt.mailing.pk }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="4">Попыток пока не было.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
