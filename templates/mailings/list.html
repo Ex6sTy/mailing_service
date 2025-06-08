@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <a href="{% url 'mailings:send' mailing.pk %}" class="btn btn-outline-danger btn-sm">
+  Отправить
+    </a>
+  <h2>Список рассылок</h2>
+    <div class="d-flex justify-content-end mb-3">
+      <a href="{% url 'mailings:create' %}" class="btn btn-success">
+        ➕ Создать рассылку
+      </a>
+    </div>
+  {% for mailing in mailings %}
+    <div class="mb-3">
+      <strong>{{ mailing }}</strong>
+    </div>
+  {% empty %}
+    <p>Рассылок пока нет.</p>
+  {% endfor %}
+{% endblock %}

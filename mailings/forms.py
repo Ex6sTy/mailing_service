@@ -17,9 +17,9 @@ class ClientForm(forms.ModelForm):
 class MailingForm(forms.ModelForm):
     class Meta:
         model = Mailing
-        fields = ["start_time", "end_time", "status", "message", "clients"]
-        widgets = {
-            "start_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
-            "end_time": forms.DateTimeInput(attrs={"type": "datetime-local"}),
-            "clients": forms.SelectMultiple(attrs={"size": 6}),
-        }
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'

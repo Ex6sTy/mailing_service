@@ -28,5 +28,12 @@
       </div>
     </div>
   </div>
-</div>
+    {% if user.is_authenticated %}
+      <div class="text-center mt-4">
+        <a href="{% url 'mailings:list' %}" class="btn btn-lg btn-primary px-4">
+           Перейти к управлению рассылками
+        </a>
+      </div>
+    {% endif %}
+    </div>
 {% endblock %}

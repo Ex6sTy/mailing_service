@@ -1,17 +1,20 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView, ListView, CreateView, UpdateView, DeleteView
-from .models import Mailing, Client, Message, MailingAttempt
+from .models import Mailing, Client, Message, Attempt
 from .forms import ClientForm, MessageForm, MailingForm
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect
 from django.core.mail import send_mail
 from django.contrib import messages
+from django.utils.timezone import now
+from django.views import View
 
 
 class HomeView(TemplateView):
     template_name = "mailings/home.html"
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -122,6 +125,7 @@ class MessageDeleteView(DenyManagersMixin, LoginRequiredMixin, DeleteView):
 class MailingListView(LoginRequiredMixin, ListView):
     model = Mailing
     template_name = "mailings/mailing_list.html"
+    context_object_name = 'mailings'
 
     def get_queryset(self):
         if self.request.user.groups.filter(name="Менеджеры").exists():
@@ -197,10 +201,46 @@ def send_mailing_now(request, pk):
 
 
 class AttemptListView(LoginRequiredMixin, ListView):
-    model = MailingAttempt
+    model = Attempt
     template_name = "mailings/attempt_list.html"
 
     def get_queryset(self):
         if self.request.user.groups.filter(name="Менеджеры").exists():
             return MailingAttempt.objects.filter(mailing__owner=self.request.user) if not self.request.user.groups.filter(name="Менеджеры").exists() else MailingAttempt.objects.all()
         return Client.objects.filter(owner=self.request.user)
+
+
+class SendMailingView(View):
+    def get(self, request, pk):
+        mailing = get_object_or_404(Mailing, pk=pk)
+
+        if not (mailing.start_time <= now() <= mailing.end_time):
+            messages.warning(request, "Сейчас не время для рассылки.")
+            return redirect('mailings:list')
+
+        for client in mailing.clients.all():
+            try:
+                send_mail(
+                    subject=mailing.message.subject,
+                    message=mailing.message.body,
+                    from_email='noreply@example.com',
+                    recipient_list=[client.email],
+                    fail_silently=False
+                )
+                Attempt.objects.create(
+                    mailing=mailing,
+                    status='Успешно',
+                    server_response='Письмо доставлено'
+                )
+            except Exception as e:
+                Attempt.objects.create(
+                    mailing=mailing,
+                    status='Не успешно',
+                    server_response=str(e)
+                )
+
+        mailing.status = 'Запущена'
+        mailing.save()
+
+        messages.success(request, "Рассылка выполнена.")
+        return redirect('mailings:list')

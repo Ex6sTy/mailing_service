@@ -1,9 +1,11 @@
 from django.urls import path
 from . import views
+from .views import MailingListView, SendMailingView, MailingCreateView
 
 app_name = "mailings"
 
 urlpatterns = [
+    path('', MailingListView.as_view(), name='list'),
     path("clients/", views.ClientListView.as_view(), name="client_list"),
     path("clients/create/", views.ClientCreateView.as_view(), name="client_create"),
     path("clients/<int:pk>/edit/", views.ClientUpdateView.as_view(), name="client_edit"),
@@ -18,5 +20,6 @@ urlpatterns = [
     path("mailings/<int:pk>/delete/", views.MailingDeleteView.as_view(), name="mailing_delete"),
     path("mailings/<int:pk>/send/", views.send_mailing_now, name="mailing_send"),
     path("attempts/", views.AttemptListView.as_view(), name="attempt_list"),
-
+    path('<int:pk>/send/', SendMailingView.as_view(), name='send'),
+    path('create/', MailingCreateView.as_view(), name='create'),
 ]

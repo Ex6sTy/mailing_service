@@ -2,7 +2,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import DjangoJobStore
 from django.utils.timezone import now
 from django.core.mail import send_mail
-from .models import Mailing, MailingAttempt
+from .models import Mailing, Attempt
 from django.conf import settings
 
 def check_and_send_mailings():
